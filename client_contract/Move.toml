@@ -1,0 +1,11 @@
+[package]
+name = "client"
+version = "0.0.1"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework", rev = "devnet" }
+randme = { git = "https://github.com/CyanseaYang/randme.git", rev = "master" }
+
+[addresses]
+client =  "0x0"
+sui =  "0000000000000000000000000000000000000002"
