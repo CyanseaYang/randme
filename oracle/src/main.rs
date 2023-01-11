@@ -25,19 +25,18 @@ const PACKAGEID: &str = "0xfe790fb1dc1c593a13e2aeaeeb1794c0eb87bd9b";
 async fn main() -> Result<(), anyhow::Error> {
     let sui = SuiClient::new("https://fullnode.devnet.sui.io:443", Some("wss://fullnode.devnet.sui.io:443"), None).await?;
     let package_id = ObjectID::from_hex_literal(PACKAGEID).unwrap();
-    let filters = vec![
-        SuiEventFilter::MoveEventType(format!("{}::vrf::RequestEvent", PACKAGEID)),
-    ];
     let keystore_path = match dirs::home_dir() {
         Some(v) => v.join(".sui").join("sui_config").join("sui.keystore"),
         None => panic!("cannot obtain home directory path"),
     };
     let keystore = Keystore::from(FileBasedKeystore::new(&keystore_path)?);
-    let signer = keystore.addresses()[1];
-    println!("signer: {:?}", &signer);
+    let signer = keystore.addresses()[0];
     let bls_kp = BLS12381KeyPair::generate(&mut thread_rng());
     println!("bls public key: {}", &bls_kp.public());
 
+    let filters = vec![
+        SuiEventFilter::MoveEventType(format!("{}::vrf::RequestEvent", PACKAGEID)),
+    ];
     let mut subscribe_all = sui
         .event_api()
         .subscribe_event(SuiEventFilter::All(filters))
