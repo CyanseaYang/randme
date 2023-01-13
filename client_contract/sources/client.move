@@ -23,6 +23,5 @@ module client::client {
     public entry fun fulfill_randme(randomness: Randomness) {
         let (number, seed) = vrf::fulfill(randomness);
         // use random number
-        if (number > seed) {}
     }
 }
