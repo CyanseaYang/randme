@@ -19,7 +19,7 @@ use fastcrypto::bls12381::min_sig::*;
 use fastcrypto::{traits::{KeyPair, Signer}};
 use rand::thread_rng;
 
-const PACKAGEID: &str = "0xfe790fb1dc1c593a13e2aeaeeb1794c0eb87bd9b";
+const PACKAGEID: &str = "0x1fe19419c6aeb4201fea65c2487857eb2621011f";
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
