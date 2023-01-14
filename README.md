@@ -1,22 +1,22 @@
-# RandMe - SUI 上的可验证随机数生成器
+# RandMe - Verifiable random number generator on SUI
 
-RandMe VRF 生成 SUI 链上可验证的随机数，可验证随机数可用于多种链上业务。
+RandMe VRF generates verifiable random numbers on the SUI chain, which can be used for various on-chain businesses.
 
-SUI 上的用户合约要使用RandMe VRF合约，在Move.toml中加入：
+The user contract on SUI needs to use the RandMe VRF contract, first add the following code to Move.toml:
 	
 	randme = { git = "https://github.com/CyanseaYang/randme.git", rev = "master" }
-在用户合约文件中发起随机数请求：
+Initiate a random number request in the user contract file:
 	
 	use randme::vrf::{Self, Randomness};
 	
 	vrf::request(seed, user_address);
-VRF合约的request函数接收两个参数，类型为u64的种子和用户的SUI地址。种子由用户合约自行定义，比如定义一个用于计数的共享对象，每次使用时递增计数，将计数作为种子。vrf::request在收到请求后，会发射一个RequestEvent事件，其中包括种子和用户地址。
+The request function of the VRF contract receives two parameters, the seed of type u64 and the user's SUI address. The seed is defined by the user contract, such as defining a shared object for counting, incrementing the count each time it is used, and using the count as a seed. After vrf::request receives the request, it will emit a RequestEvent event, which includes the seed and user address.
 
-线下预言机负责监听VRF合约发出的事件，一旦监听到RequestEvent，就启动作业，对种子和用户地址做BCS编码作为原始消息，并使用提前在VRF合约中注册过的BLS12381密钥对，对消息做签名，生成BLS12381 Signature。然后将BLS签名、BLS公钥、以及种子和用户地址提交给VRF合约中的verify函数。
+The offline oracle machine is responsible for monitoring the events sent by the VRF contract. Once the RequestEvent is detected, the job will be started, and the seed and user address will be BCS encoded as the original message, and the BLS12381 key pair registered in the VRF contract in advance will be used to process the message. Make a signature and generate a BLS12381 Signature. Then submit the BLS signature, BLS public key, and seed and user addresses to the verify function in the VRF contract.
 
-VRF合约的verify函数验证提交的BLS签名。一旦验证通过，就使用sha2_256对BLS签名做哈希运算，生成随机数输出，并将256位的输出转换为64位，得到一个64位随机数。然后生成一个Randomness SUI对象，对象字段包括64位随机数和用户合约提供的种子，将Randomness对象发送给提交的用户SUI地址。
+The verify function of the VRF contract verifies the submitted BLS signature. Once the verification is passed, the BLS signature is hashed using sha2_256 to generate a random number output, and the 256-bit output is converted to 64-bit to obtain a 64-bit random number. Then generate a Randomness SUI object, the object field includes a 64-bit random number and the seed provided by the user contract, and send the Randomness object to the submitted user SUI address.
 
-用户要实时处理接收到的Randomness对象，需监听VRF合约的NewObject事件，一旦检测到NewObject的接收方是自己，说明已经拥有了Randomness对象。下面是rust示例代码：
+To process the received Randomness object in real time, the user needs to monitor the NewObject event of the VRF contract. Once it is detected that the recipient of the NewObject is the user himself, it means that he already has the Randomness object. Here is the rust sample code:
 
 	let filters = vec![
       	SuiEventFilter::Module("vrf".to_string()),
@@ -31,17 +31,17 @@ VRF合约的verify函数验证提交的BLS签名。一旦验证通过，就使�
      	Owner::AddressOwner(address) => {
          		if &address == &my_address {
          		...... 
-用户将收到的对象提交给用户合约中的一个函数，用户合约需要提供一个参数为Randomness对象的函数，该函数将对象传递给VRF合约的fulfill函数，fulfill函数解包Randomness对象，得到其中的64位随机数和种子，返回给用户合约。用户合约函数代码示例：
+The user submits the received object to a function in the user contract. The user contract needs to provide a function whose parameter is the Randomness object. This function passes the object to the fulfill function of the VRF contract. The fulfill function unpacks the Randomness object and obtains 64 Bit random number and seed, returned to the user contract. User contract function code example:
 
 	public entry fun fulfill_randme(randomness: Randomness) {
     	let (number, seed) = vrf::fulfill(randomness);
     	// use random number
 	}
 
-## 流程图
+## Flow chart
 ![](https://raw.githubusercontent.com/CyanseaYang/randme/master/flow.png)
 
-## 后续工作
-* 预言机采用BLS阈值签名和MPC多方计算模式。
-* 预言机的鲁棒性，能够保持长时间稳定运行。
-* 合约中添加收费功能和订阅功能。
+## Follow-up
+* The oracle machine adopts BLS threshold signature and MPC(multi-party compute) mode.
+* The robustness of the oracle machine can maintain stable operation for a long time.
+* Add charging function and subscription function to VRF contract.
