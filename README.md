@@ -7,6 +7,7 @@ SUI 上的用户合约要使用RandMe VRF合约，在Move.toml中加入：
 在用户合约文件中发起随机数请求：
 	
 	use randme::vrf::{Self, Randomness};
+	
 	vrf::request(seed, user_address);
 VRF合约的request函数接收两个参数，类型为u64的种子和用户的SUI地址。种子由用户合约自行定义，比如定义一个用于计数的共享对象，每次使用时递增计数，将计数作为种子。vrf::request在收到请求后，会发射一个RequestEvent事件，其中包括种子和用户地址。
 
@@ -17,8 +18,8 @@ VRF合约的verify函数验证提交的BLS签名。一旦验证通过，就使�
 用户要实时处理接收到的Randomness对象，需监听VRF合约的NewObject事件，一旦检测到NewObject的接收方是自己，就表示自己拥有了Randomness对象。下面是rust示例代码：
 
 	let filters = vec![
-      SuiEventFilter::Module("vrf".to_string()),
-      SuiEventFilter::EventType(EventType::NewObject),
+      	SuiEventFilter::Module("vrf".to_string()),
+      	SuiEventFilter::EventType(EventType::NewObject),
 	];
 	let mut subscribe = sui
     	.event_api()
@@ -26,9 +27,9 @@ VRF合约的verify函数验证提交的BLS签名。一旦验证通过，就使�
     	.await?;
 		......
  	match recipient {
-     		Owner::AddressOwner(address) => {
-         		if &address == &my_address {
-         			...... 
+     	Owner::AddressOwner(address) => {
+         	if &address == &my_address {
+         		...... 
 用户将收到的对象提交给用户合约中的一个函数，用户合约需要提供一个参数为Randomness对象的函数，该函数将对象传递给VRF合约的fulfill函数，fulfill函数解包Randomness对象，得到其中的64位随机数和种子，返回给用户合约。用户合约函数代码示例：
 
 	public entry fun fulfill_randme(randomness: Randomness) {
