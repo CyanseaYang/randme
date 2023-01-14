@@ -12,11 +12,11 @@ Initiate a random number request in the user contract file:
 	vrf::request(seed, user_address);
 The request function of the VRF contract receives two parameters, the seed of type u64 and the user's SUI address. The seed is defined by the user contract, such as defining a shared object for counting, incrementing the count each time it is used, and using the count as a seed. After vrf::request receives the request, it will emit a RequestEvent event, which includes the seed and user address.
 
-The offline oracle machine is responsible for monitoring the events sent by the VRF contract. Once the RequestEvent is detected, the job will be started, and the seed and user address will be BCS encoded as the original message, and the BLS12381 key pair registered in the VRF contract in advance will be used to process the message. Make a signature and generate a BLS12381 Signature. Then submit the BLS signature, BLS public key, and seed and user addresses to the verify function in the VRF contract.
+The offline oracle machine is responsible for monitoring the events sent by the VRF contract. Once the RequestEvent is detected, the job will be started, and the seed and user address will be BCS encoded as the original message, and the BLS12381 key pair registered in the VRF contract in advance will be used to process the message. Make a signature and generate a BLS12381 Signature. Then submit the BLS signature, BLS public key, and seed and user address to the verify function in the VRF contract.
 
 The verify function of the VRF contract verifies the submitted BLS signature. Once the verification is passed, the BLS signature is hashed using sha2_256 to generate a random number output, and the 256-bit output is converted to 64-bit to obtain a 64-bit random number. Then generate a Randomness SUI object, the object field includes a 64-bit random number and the seed provided by the user contract, and send the Randomness object to the submitted user SUI address.
 
-To process the received Randomness object in real time, the user needs to monitor the NewObject event of the VRF contract. Once it is detected that the recipient of the NewObject is the user himself, it means that he already has the Randomness object. Here is the rust sample code:
+To process the received Randomness object in real time, the user needs to monitor the NewObject event of the VRF module. Once it is detected that the recipient of the NewObject is the user himself, it means that he already has the Randomness object. Here is the rust sample code:
 
 	let filters = vec![
       	SuiEventFilter::Module("vrf".to_string()),
