@@ -1,6 +1,7 @@
 # RandMe - SUI 上的随机数生成器
 
 RandMe VRF 生成 SUI 链上可验证的随机数，可验证随机数可用于多种链上业务。
+
 SUI 上的用户合约要使用RandMe VRF合约，在Move.toml中加入：
 	
 	randme = { git = "https://github.com/CyanseaYang/randme.git", rev = "master" }
