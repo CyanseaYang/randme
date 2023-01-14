@@ -1,4 +1,4 @@
-# RandMe - SUI 上的随机数生成器
+# RandMe - SUI 上的可验证随机数生成器
 
 RandMe VRF 生成 SUI 链上可验证的随机数，可验证随机数可用于多种链上业务。
 
