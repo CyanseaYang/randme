@@ -16,7 +16,7 @@ VRF合约的request函数接收两个参数，类型为u64的种子和用户的S
 
 VRF合约的verify函数验证提交的BLS签名。一旦验证通过，就使用sha2_256对BLS签名做哈希运算，生成随机数输出，并将256位的输出转换为64位，得到一个64位随机数。然后生成一个Randomness SUI对象，对象字段包括64位随机数和用户合约提供的种子，将Randomness对象发送给提交的用户SUI地址。
 
-用户要实时处理接收到的Randomness对象，需监听VRF合约的NewObject事件，一旦检测到NewObject的接收方是自己，就表示自己拥有了Randomness对象。下面是rust示例代码：
+用户要实时处理接收到的Randomness对象，需监听VRF合约的NewObject事件，一旦检测到NewObject的接收方是自己，说明已经拥有了Randomness对象。下面是rust示例代码：
 
 	let filters = vec![
       	SuiEventFilter::Module("vrf".to_string()),
