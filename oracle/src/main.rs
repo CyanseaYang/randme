@@ -19,7 +19,7 @@ use fastcrypto::bls12381::min_sig::*;
 use fastcrypto::{traits::{KeyPair, Signer}};
 use rand::thread_rng;
 
-const PACKAGEID: &str = "0x1fe19419c6aeb4201fea65c2487857eb2621011f";
+const PACKAGEID: &str = "0x065a5c9de811d3416942360a00ad2f00be62fec4";
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
@@ -32,7 +32,7 @@ async fn main() -> Result<(), anyhow::Error> {
     let keystore = Keystore::from(FileBasedKeystore::new(&keystore_path)?);
     let signer = keystore.addresses()[0];
     let bls_kp = BLS12381KeyPair::generate(&mut thread_rng());
-    println!("bls public key: {}", &bls_kp.public());
+    println!("bls12381 public key: {}", &bls_kp.public());
 
     let filters = vec![
         SuiEventFilter::MoveEventType(format!("{}::vrf::RequestEvent", PACKAGEID)),
