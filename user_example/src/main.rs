@@ -17,7 +17,7 @@ use sui_adapter::execution_mode;
 use futures::StreamExt;
 use std::str::FromStr;
 
-const PACKAGEID: &str = "0x64aa4d601da1ed80fcb94d982fd438c9a448a417";
+const PACKAGEID: &str = "0x38e5c60340beac45439d309d7a16541d6a6297e9";
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
