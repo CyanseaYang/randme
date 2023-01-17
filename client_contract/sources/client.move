@@ -4,20 +4,20 @@ module client::client {
     use sui::transfer;
     use randme::vrf::{Self, Randomness};
 
-    struct Count has key, store {
+    struct Counter has key {
         id: UID,
-        seed: u64,
+        value: u64,
     }
 
     fun init(ctx: &mut TxContext) {
         transfer::share_object(
-            Count { id: object::new(ctx), seed: 0 }
+            Counter { id: object::new(ctx), value: 0 }
         )
     }
 
-    public entry fun request_randme(count: &mut Count, ctx: &mut TxContext) {
-        count.seed = count.seed + 1;
-        vrf::request(count.seed, tx_context::sender(ctx));
+    public entry fun request_randme(counter: &mut Count, ctx: &mut TxContext) {
+        counter.value = counter.value + 1;
+        vrf::request(counter.value, tx_context::sender(ctx));
     }
 
     public entry fun fulfill_randme(randomness: Randomness) {
