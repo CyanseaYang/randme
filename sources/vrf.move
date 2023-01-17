@@ -8,7 +8,7 @@ module randme::vrf {
     use sui::transfer;
     use sui::bls12381;
     use sui::bcs;
-    use std::hash::sha2_256;
+    use std::hash::sha3_256;
     use std::vector;
 
     const EInvalidSignature: u64 = 1;
@@ -39,7 +39,7 @@ module randme::vrf {
         vector::append(&mut msg, bcs::to_bytes(&consumer)); 
         assert!(bls12381::bls12381_min_sig_verify(&sig, &pubkey, &msg), EInvalidSignature);
         
-        let output = bcs::new(sha2_256(sig));
+        let output = bcs::new(sha3_256(sig));
         let number = bcs::peel_u64(&mut output);
         let randomness = Randomness {
             id: object::new(ctx),
