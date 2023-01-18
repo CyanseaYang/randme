@@ -31,14 +31,10 @@ module randme::vrf {
     }
 
     fun init(ctx: &mut TxContext) {
-        let pubkey = vector::empty<u8>();
-        /*while (vector::length(&pubkey) < 96) {
-            vector::push_back(&mut pubkey, 0);
-        };*/
         transfer::share_object(VerificationKey {
             id: object::new(ctx),
             owner: tx_context::sender(ctx),
-            bls_pubkey: pubkey,
+            bls_pubkey: vector::empty(),
         })
     }
 
