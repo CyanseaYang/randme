@@ -7,4 +7,4 @@ Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-fram
 
 [addresses]
 sui =  "0000000000000000000000000000000000000002"
-randme = "0x065a5c9de811d3416942360a00ad2f00be62fec4"
+randme = "0x31c67f8e48afa637355084d1861d89f8679ce3a3"
