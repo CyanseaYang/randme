@@ -15,7 +15,7 @@ module client::client {
         )
     }
 
-    public entry fun request_randme(counter: &mut Count, ctx: &mut TxContext) {
+    public entry fun request_randme(counter: &mut Counter, ctx: &mut TxContext) {
         counter.value = counter.value + 1;
         vrf::request(counter.value, tx_context::sender(ctx));
     }
