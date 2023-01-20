@@ -13,13 +13,16 @@ use sui_types::{
 };
 use sui_keys::keystore::{AccountKeystore, FileBasedKeystore, Keystore};
 use futures::StreamExt;
-use std::str::FromStr;
 
 use fastcrypto::bls12381::min_sig::*;
-use fastcrypto::{traits::{KeyPair, Signer}};
-use rand::thread_rng;
+use fastcrypto::{traits::{KeyPair, Signer, EncodeDecodeBase64}};
+//use fastcrypto::encoding::{Encoding, Hex};
+use anyhow::anyhow;
+use std::{fs, str::FromStr, path::Path};
+//use rand::thread_rng;
 
-const PACKAGEID: &str = "0x065a5c9de811d3416942360a00ad2f00be62fec4";
+const PACKAGEID: &str = "0x6e37bcfe8f8e11ba7f6b8a66d5d0b65208a42a4c";
+const VERKEYID: &str = "0x5a28d201427d17cbbe3ab8da3dac889d76aafc28";
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
@@ -31,8 +34,42 @@ async fn main() -> Result<(), anyhow::Error> {
     };
     let keystore = Keystore::from(FileBasedKeystore::new(&keystore_path)?);
     let signer = keystore.addresses()[0];
-    let bls_kp = BLS12381KeyPair::generate(&mut thread_rng());
-    println!("bls12381 public key: {}", &bls_kp.public());
+
+    let path = Path::new("./blskeystore");
+    /*let bls_kp = BLS12381KeyPair::generate(&mut thread_rng());
+    let contents = bls_kp.encode_base64();
+    fs::write(path, contents)?;
+   
+    let admin_verkey = sui
+        .transaction_builder()
+        .move_call(
+            signer,
+            package_id,
+            "vrf",
+            "admin_verkey",
+            vec![],
+            vec![
+                SuiJsonValue::from_str(VERKEYID)?,
+                SuiJsonValue::new(bls_kp.public().as_ref().into())?,    
+            ],
+            None,
+            1000,
+        )
+        .await?;
+    let signature = keystore
+        .sign_secure(&signer, &admin_verkey, Intent::default())?;
+    let response = sui
+        .quorum_driver()
+        .execute_transaction(
+            Transaction::from_data(admin_verkey, Intent::default(), signature).verify()?,
+            Some(ExecuteTransactionRequestType::WaitForLocalExecution),
+        )
+        .await?;
+    println!("admin_verkey_response: {:?}", response);*/
+
+    let contents = fs::read_to_string(path)?;
+    let bls_kp = BLS12381KeyPair::decode_base64(contents.as_str().trim()).map_err(|e| anyhow!(e))?;
+    //println!("bls12381 public key: 0x{}", &Hex::encode(bls_kp.public().as_ref()));
 
     let filters = vec![
         SuiEventFilter::MoveEventType(format!("{}::vrf::RequestEvent", PACKAGEID)),
@@ -64,6 +101,7 @@ async fn main() -> Result<(), anyhow::Error> {
                                             msg.extend_from_slice(&bcs::to_bytes(&consumer).unwrap());
                                             let bls_sig = bls_kp.sign(&msg[..]);
                                             
+                                            println!("build verify transaction...");
                                             let verify_call = sui
                                                 .transaction_builder()
                                                 .move_call(
@@ -74,9 +112,9 @@ async fn main() -> Result<(), anyhow::Error> {
                                                     vec![],
                                                     vec![
                                                         SuiJsonValue::new(bls_sig.as_ref().into())?,
-                                                        SuiJsonValue::new(bls_kp.public().as_ref().into())?,
-                                                        SuiJsonValue::from_str(&seed.to_string())?,
+                                                        SuiJsonValue::from_str(&format!("\"{seed}\""))?,
                                                         SuiJsonValue::from_str(&consumer.to_string())?,
+                                                        SuiJsonValue::from_str(VERKEYID)?,
                                                     ],
                                                     None,
                                                     1000,
