@@ -1,5 +1,5 @@
 [package]
-name = "consumer"
+name = "user_example"
 version = "0.1.0"
 edition = "2021"
 
@@ -9,7 +9,6 @@ edition = "2021"
 sui-sdk = { git = "https://github.com/MystenLabs/sui", branch = "devnet" }
 sui-types = { git = "https://github.com/MystenLabs/sui", branch = "devnet" }
 sui-keys = { git = "https://github.com/MystenLabs/sui", branch = "devnet" }
-sui-adapter = { git = "https://github.com/MystenLabs/sui", branch = "devnet" }
 
 anyhow = "1.0.64"
 async-trait = "0.1.61"

@@ -13,11 +13,10 @@ use sui_types::{
     intent::Intent,
 };
 use sui_keys::keystore::{AccountKeystore, FileBasedKeystore, Keystore};
-use sui_adapter::execution_mode;
 use futures::StreamExt;
 use std::str::FromStr;
 
-const PACKAGEID: &str = "0x38e5c60340beac45439d309d7a16541d6a6297e9";
+const PACKAGEID: &str = "0x58e492a1bd13d12555f0154a50ab258815d1ca46";
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
@@ -56,7 +55,7 @@ async fn main() -> Result<(), anyhow::Error> {
                                 //println!("build transaction...");
                                 let fulfill_call = sui
                                     .transaction_builder()
-                                    .move_call::<execution_mode::Normal>(
+                                    .move_call(
                                         signer,
                                         package_id,
                                         "client",
