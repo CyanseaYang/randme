@@ -54,6 +54,7 @@ module randme::vrf {
     }
 
     public entry fun verify(sig: vector<u8>, seed: u64, consumer: address, verkey: &VerificationKey, ctx: &mut TxContext) {
+        assert!(verkey.owner == tx_context::sender(ctx), 0);
         let msg = bcs::to_bytes(&seed);
         vector::append(&mut msg, bcs::to_bytes(&consumer)); 
         assert!(bls12381::bls12381_min_sig_verify(&sig, &verkey.bls_pubkey, &msg), EInvalidSignature);
